@@ -41,6 +41,7 @@ $ docker-compose build
 # start
 $ docker-compose -up
 ```
+Application is running on localhost with port 3000
 
 ## Create migration and seeds to Database
 
