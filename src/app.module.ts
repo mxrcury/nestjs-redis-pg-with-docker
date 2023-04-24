@@ -1,0 +1,32 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
+import { CacheConfig } from 'src/config/cache.config';
+import { FilmsModule } from 'src/modules/films/films.module';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { Film } from './modules/films/films.model';
+import { SeederModule } from 'nestjs-sequelize-seeder';
+
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    SeederModule.forRoot({ enableAutoId: true, isGlobal: true, logging: true }),
+    SequelizeModule.forRoot({
+      dialect: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: +process.env.POSTGRES_PORT,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DB,
+      models: [Film],
+      autoLoadModels: true
+    }),
+    CacheModule.register(CacheConfig.getConfig()),
+    FilmsModule
+  ],
+  providers: [
+    CacheConfig.getInterceptor()
+  ]
+})
+export class AppModule { }
